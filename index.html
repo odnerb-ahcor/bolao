@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bolão da Virada</title>
+  <style>
+    *{
+      padding: 0;
+      margin: 0;
+      font-family: verdana;
+      /* background-color: #f0f5f8; */
+      background-color: #fdfdfd;
+    }
+
+    .containerPrincipal{
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .containerResult {
+      height: 200px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .displayWin {
+      display: grid;
+      justify-content: center;
+      align-items: center;
+      height: 175px;
+      overflow-y: auto;
+      box-shadow: 1px 4px 4px black;
+    }
+
+    td {
+      padding: 2px 10px;
+    }
+
+    .nome {
+      text-align: center;
+      color: #06679b;
+    }
+
+    .listNum {
+      display: flex;
+      gap: 5px;
+    }
+
+    .minNumber {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .num {
+      width: 27px;
+      height: 27px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 2px solid;
+      font-size: 12px;
+    }
+
+    .megaNumber {
+      height: 35px;
+      border-top: 2px solid #0c92db;
+      border-bottom: 2px solid #0c92db;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      color: #06679b;
+    }
+
+    .containerNumeros{
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      overflow: auto;
+    }
+
+    .boxNumber{
+      display: grid;
+      grid-template-columns: repeat(6, 50px); /* Define 6 colunas de 50px */
+      gap: 10px;
+      width: 354px;   
+    }
+
+    .number {
+      width: 50px;
+      height: 50px;
+      border-radius: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 2px solid;
+    }
+
+    .blue {
+      background-color: #e6f2f8;
+      border-color: #9fd9f8;
+      color: #2c7ca7;
+    }
+
+    .gren {
+      background-color: #c2f4ea;
+      border-color: #00F0C0;
+      color: #01ad8b;
+    }
+
+    .red {
+      background-color: #f3bebc;
+      border-color: #F1433C;
+      color: #b41813;
+    }
+
+    .white {
+      background-color: #eef7f9;
+      border-color: #d0dfe2;
+      color: #2c7ca7;
+    }
+
+    .result {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .ballResult {
+      display: flex;
+      gap: 5px;
+    }
+
+    .numResult {
+      width: 25px;
+      height: 25px;
+      border-radius: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 2px solid;
+      font-size: 12px;
+    }
+
+    .restart {
+      display: none;
+      justify-content: center;
+      align-items: center;
+      border: 2px solid;
+      height: 45px;
+      box-shadow: 4px 4px 4px;
+    }
+
+    a{
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="containerPrincipal">
+    <div class="containerResult">
+      <div class="displayWin">
+        <table class="listJogos"></table>
+      </div>
+
+      <div class="megaNumber">
+        <div class="result">Resultado: <div class="ballResult"></div> </div>
+      </div>
+      <div class="restart gren" onclick="restart()">Reiniciar</div>
+    </div>
+    <div class="containerNumeros">
+      <div class="boxNumber"></div>
+    </div>
+  </div>
+
+  <script>
+    const data = [
+      {nome: 'Décio', jogo: ['05', '13', '25', '34', '47', '58']},
+      {nome: 'Décio', jogo: ['02', '15', '21', '33', '42', '60']},
+      {nome: 'Décio', jogo: ['06', '12', '24', '36', '44', '56']},
+      {nome: 'Décio', jogo: ['01', '08', '13', '25', '32', '48']},
+      {nome: 'Décio', jogo: ['03', '15', '23', '32', '46', '52']},
+      {nome: 'Cintya', jogo: ['02', '05', '08', '11', '13', '33']},
+      {nome: 'Cintya', jogo: ['08', '23', '44', '46', '51', '57']},
+      {nome: 'Cintya', jogo: ['09', '22', '33', '42', '52', '59']},
+      {nome: 'Cintya', jogo: ['03', '20', '22', '37', '45', '58']},
+      {nome: 'Cintya', jogo: ['08', '15', '20', '27', '49', '50']},
+      {nome: 'Rodinele', jogo: ['03', '13', '17', '22', '33', '55']},
+      {nome: 'Rodinele', jogo: ['06', '25', '34', '44', '51', '60']},
+      {nome: 'Rodinele', jogo: ['02', '16', '25', '38', '50', '56']},
+      {nome: 'Rodinele', jogo: ['22', '11', '04', '24', '31', '36']},
+      {nome: 'Rodinele', jogo: ['15', '20', '04', '10', '29', '45']},
+      {nome: 'Dica', jogo: ['04', '10', '34', '26', '24', '20']},
+      {nome: 'Dica', jogo: ['07', '08', '11', '29', '31', '32']},
+      {nome: 'Dica', jogo: ['14', '13', '15', '18', '17', '19']},
+      {nome: 'Dica', jogo: ['13', '12', '16', '23', '35', '41']},
+      {nome: 'Dica', jogo: ['05', '09', '40', '50', '43', '60']},
+      {nome: 'Osvaldo', jogo: ['07', '09', '11', '33', '47', '49']},
+      {nome: 'Osvaldo', jogo: ['02', '12', '41', '51', '59', '60']},
+      {nome: 'Osvaldo', jogo: ['10', '15', '21', '42', '44', '47']},
+      {nome: 'Osvaldo', jogo: ['02', '22', '23', '26', '40', '31']},
+      {nome: 'Osvaldo', jogo: ['35', '39', '41', '43', '54', '57']},
+      {nome: 'Marcos', jogo: ['02', '12', '15', '21', '22', '44']},
+      {nome: 'Marcos', jogo: ['05', '09', '30', '31', '45', '58']},
+      {nome: 'Marcos', jogo: ['09', '16', '23', '37', '10', '53']},
+      {nome: 'Marcos', jogo: ['05', '33', '42', '30', '44', '23']},
+      {nome: 'Marcos', jogo: ['10', '07', '19', '26', '41', '55']},
+      {nome: 'Lorrayne', jogo: ['18', '20', '30', '24', '40', '60']},
+      {nome: 'Lorrayne', jogo: ['17', '15', '45', '50', '28', '58']},
+      {nome: 'Lorrayne', jogo: ['10', '09', '19', '42', '48', '38']},
+      {nome: 'Lorrayne', jogo: ['04', '11', '49', '55', '51', '56']},
+      {nome: 'Lorrayne', jogo: ['14', '25', '57', '31', '29', '20']},
+      {nome: 'Fernanda', jogo: ['16', '10', '03', '54', '07', '01']},
+      {nome: 'Fernanda', jogo: ['60', '50', '01', '02', '05', '04']},
+      {nome: 'Fernanda', jogo: ['41', '34', '06', '07', '09', '12']},
+      {nome: 'Fernanda', jogo: ['18', '22', '28', '05', '19', '58']},
+      {nome: 'Fernanda', jogo: ['14', '07', '09', '34', '44', '58']},
+      {nome: 'Yunna', jogo: ['05', '25', '30', '11', '40', '28']},
+      {nome: 'Yunna', jogo: ['15', '60', '22', '27', '06', '66']},
+      {nome: 'Yunna', jogo: ['35', '44', '47', '33', '20', '13']},
+      {nome: 'Yunna', jogo: ['10', '55', '12', '08', '34', '27']},
+      {nome: 'Yunna', jogo: ['50', '03', '31', '48', '36', '23']},
+      {nome: 'Geovana', jogo: ['10', '33', '05', '25', '29', '53']},
+      {nome: 'Geovana', jogo: ['06', '11', '19', '08', '44', '46']},
+      {nome: 'Geovana', jogo: ['12', '51', '36', '56', '58', '02']},
+      {nome: 'Geovana', jogo: ['15', '30', '20', '52', '37', '09']},
+      {nome: 'Geovana', jogo: ['10', '53', '34', '05', '33', '37']},
+      {nome: 'Juliana', jogo: ['23', '10', '05', '12', '08', '07']},
+      {nome: 'Juliana', jogo: ['08', '01', '10', '04', '21', '42']},
+      {nome: 'Juliana', jogo: ['02', '21', '36', '59', '08', '15']},
+      {nome: 'Juliana', jogo: ['13', '25', '06', '33', '47', '58']},
+      {nome: 'Juliana', jogo: ['60', '20', '03', '17', '31', '29']},
+      {nome: 'Brendo', jogo: ['05', '09', '32', '27', '23', '41']},
+      {nome: 'Brendo', jogo: ['12', '24', '34', '38', '53', '59']},
+      {nome: 'Brendo', jogo: ['15', '17', '33', '42', '47', '51']},
+      {nome: 'Brendo', jogo: ['01', '07', '17', '28', '30', '54']},
+      {nome: 'Brendo', jogo: ['03', '11', '16', '38', '54', '56']},
+      {nome: 'Lucimar', jogo: ['32', '34', '36', '38', '39', '30']},
+      {nome: 'Lucimar', jogo: ['05', '18', '21', '37', '53', '59']},
+      {nome: 'Lucimar', jogo: ['13', '14', '35', '39', '56', '60']},
+      {nome: 'Lucimar', jogo: ['09', '18', '16', '22', '32', '42']},
+      {nome: 'Lucimar', jogo: ['01', '10', '05', '07', '08', '04']},
+      {nome: 'Deuseci', jogo: ['17', '27', '29', '30', '33', '35']},
+      {nome: 'Deuseci', jogo: ['01', '03', '06', '07', '09', '10']},
+      {nome: 'Deuseci', jogo: ['03', '14', '22', '27', '33', '41']},
+      {nome: 'Deuseci', jogo: ['05', '11', '19', '25', '52', '29']},
+      {nome: 'Deuseci', jogo: ['13', '22', '27', '35', '38', '55']},
+      {nome: 'Bia e Bruno', jogo: ['13', '16', '21', '34', '48', '56']},
+      {nome: 'Bia e Bruno', jogo: ['07', '14', '23', '35', '52', '58']},
+      {nome: 'Bia e Bruno', jogo: ['15', '25', '23', '16', '02', '12']},
+      {nome: 'Bia e Bruno', jogo: ['06', '10', '23', '34', '56', '58']},
+      {nome: 'Bia e Bruno', jogo: ['09', '06', '27', '15', '16', '23']},
+      // {nome: 'Bia e Bruno', jogo: ['', '', '', '', '', '']},
+    ]
+
+    let number = []
+
+    function addLeadingZero(num) {
+      return num < 10 ? num.toString().padStart(2, '0') : num.toString();
+    }
+
+    function numClick(event) {
+      if (number.includes(addLeadingZero(event.currentTarget.textContent))) {
+        event.currentTarget.classList.remove('gren')
+        event.currentTarget.classList.add('white')
+        let index = number.indexOf(event.currentTarget.textContent)
+        number.splice(index, 1);
+        drawDisplay(number.length > 0 ? ordenar() : data);
+        drawResult();
+        return
+      }
+
+      if (number.length == 6) {
+        return
+      }
+
+      number.push(addLeadingZero(event.currentTarget.textContent))
+      event.currentTarget.classList.remove('white')
+      event.currentTarget.classList.add('gren')
+      drawDisplay(ordenar())
+      drawResult()
+    }
+
+    function ordenar() {
+      const calcularSimilaridade = (numeros, referencia) => {
+        return numeros.filter(num => referencia.includes(num)).length;
+      };
+
+      return data.sort((a, b) => {
+        const similaridadeA = calcularSimilaridade(a.jogo, number);
+        const similaridadeB = calcularSimilaridade(b.jogo, number);
+        return similaridadeB - similaridadeA; // Ordena do maior para o menor
+      });
+    }
+
+    //Desenha Numeros
+    function drawNumbers() {
+      let html = ''
+      for (let index = 1; index <= 60; index++){
+        html += '<div class="number white" onclick="numClick(event)">'+index+'</div>'
+      }
+      document.querySelector(".boxNumber").innerHTML = html;
+    }
+
+    function drawDisplay(obj, fatality = false) {
+      let html = '';
+      console.log(fatality)
+
+      obj.map(item => {
+        let jogo = '<tr>';
+        jogo += '<td> <div class="nome">' + item.nome + '</div></td>';   
+
+        const draw = number.every(value => item.jogo.includes(value)) || number.length == 6 || number.length == 0 || fatality;
+        if (!draw) {
+          return
+        }
+
+        let numbers = ''
+        for (let num of item.jogo) {
+          let cor = 'white';
+          if (number.length == 6 || fatality) {
+            cor = number.includes(num) ? 'gren' : 'red';
+          } else if (number.length == 0) {
+            // cor = 'white';
+          } else {
+            if (number.includes(num)) {
+              cor = 'gren';
+            }
+          }
+
+          numbers += '<div class="num ' + cor + '">' + num + '</div>'
+        }
+
+        jogo += '<td class="minNumber"><div class="listNum">' + numbers + '</div></td>';   
+        jogo += '</tr>';
+
+        html += jogo;
+      })
+      if (html == '') {
+        drawDisplay(obj, true);
+      } else {
+        document.querySelector(".listJogos").innerHTML= html;
+      }
+
+      if (number.length == 6) {
+        tamanho(true);
+      }
+    }
+
+    function drawResult() {
+      let html = ''
+      number.map(num => {
+        html += '<div class="numResult blue">' + num + '</div>';
+      })
+      document.querySelector(".ballResult").innerHTML = html;
+    }
+
+    function restart() {
+      number = [];
+      drawNumbers();
+      drawDisplay(data);
+      drawResult();
+      tamanho(false);
+    }
+
+    function tamanho(grande) {
+      const div = document.querySelector(".containerResult");
+      const div2 = document.querySelector(".displayWin");
+      div.style.height = grande ? `${window.innerHeight}px` : '200px';
+      div2.style.height = grande ? `${window.innerHeight - 80}px` : '175px';
+
+      if (grande) {
+        document.querySelector(".restart").style.display = 'flex';
+        document.querySelector(".megaNumber").style.borderBottom = 'none';
+      } else {
+        document.querySelector(".restart").style.display = 'none';
+        document.querySelector(".megaNumber").style.borderBottom = '2px solid #0c92db';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('Página carregada!');
+
+      const div = document.querySelector(".containerPrincipal");
+      div.style.height = `${window.innerHeight}px`;
+
+      drawNumbers()
+      drawDisplay(data)
+    });
+  </script>
+</body>
+</html>
